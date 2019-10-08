@@ -1,11 +1,7 @@
 const request = require("supertest");
+const PouchDB = require('pouchdb');
+PouchDB.plugin(require('pouchdb-find'));
 
-const {
-  MongoClient
-} = require("mongodb");
-
-
-let connection;
 let db;
 let session;
 
@@ -20,8 +16,7 @@ describe("Sfeir Schools app", () => {
   }
 
   beforeAll(async () => {
-    connection = await MongoClient.connect(global.__MONGO_URI__);
-    db = await connection.db(global.__MONGO_DB_NAME__);
+    const db = new PouchDB('test');
 
     app = appFunction(db);
 
@@ -41,8 +36,7 @@ describe("Sfeir Schools app", () => {
   });
 
   afterAll(async () => {
-    await connection.close();
-    await db.close();
+    db.destroy();
   });
 
   it("It should list Sfeir Schools", async done => {

@@ -29,33 +29,4 @@ process.on("unhandledRejection", err => {
 const db = new PouchDB('schools');
 app(db).listen(PORT, () => log.info(`App listening on port ${PORT}!`));
 
-// const connect = () => {
-//   MongoClient.connect(
-//     url,
-//     { useNewUrlParser: true, connectTimeoutMS: 1000 },
-//     function(err, client) {
-//       if (err || !client) {
-//         log.error({ err }, "Error while connecting to DB");
-//       } else {
-//         clearInterval(interval);
-//         clearTimeout(timeout);
-
-//         const db = client.db(MONGO_INITDB_DATABASE);
-
-//         app(db).listen(PORT, () => log.info(`App listening on port ${PORT}!`));
-//       }
-//     }
-//   );
-// };
-
-// const interval = setInterval(connect, 3000);
-
-// const timeout = setTimeout(() => {
-//   clearInterval(interval);
-
-//   log.error("Failed to connect to database!");
-
-//   process.exit(1);
-// }, 10000);
-
 
