@@ -1,5 +1,5 @@
 const express = require("express");
-
+const uuidv1 = require('uuid/v1');
 const log = require("../logger")();
 
 function ensureAuthenticated(req, res, next) {
@@ -12,23 +12,24 @@ function ensureAuthenticated(req, res, next) {
   }
 }
 
-const doGet = collection => (req, res) => {
-  collection.find({}).toArray(function(err, schools) {
-    if (err) {
+const doGet = db => (req, res, next) => {
+  db.find({ selector: { type: 'school' } })
+    .then(function(results) {
+      log.info({ results }, "Found schools");
+      res.send(results.docs);
+    })
+    .catch(err => {
       log.error({ err }, "Failed to find schools");
       err.statusCode = 500;
       next(err);
-    } else {
-      log.info({ schools }, "Found schools");
-      res.send(schools);
-    }
-  });
+    });
 };
 
-const doPost = collection => (req, res) => {
+const doPost = db => (req, res, next) => {
   const school = req.body;
-
-  collection.insertOne(school, function(err) {
+  school.type = 'school';
+  school._id = uuidv1();
+  db.put(school, function(err) {
     if (err) {
       log.error({ err, school }, "Failed to insert school");
       err.statusCode = 500;
@@ -42,10 +43,9 @@ const doPost = collection => (req, res) => {
 
 module.exports = db => {
   const router = express.Router();
-  const collection = db.collection("schools");
 
-  router.get("/", doGet(collection));
-  router.post("/", ensureAuthenticated, doPost(collection));
+  router.get("/", doGet(db));
+  router.post("/", ensureAuthenticated, doPost(db));
 
   return router;
 };

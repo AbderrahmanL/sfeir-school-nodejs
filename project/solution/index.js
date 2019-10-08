@@ -1,4 +1,5 @@
-const MongoClient = require("mongodb").MongoClient;
+const PouchDB = require('pouchdb');
+PouchDB.plugin(require('pouchdb-find'));
 
 const app = require("./lib/app");
 const log = require("./lib/logger")();
@@ -25,31 +26,36 @@ process.on("unhandledRejection", err => {
   process.exit(1);
 });
 
-const connect = () => {
-  MongoClient.connect(
-    url,
-    { useNewUrlParser: true, connectTimeoutMS: 1000 },
-    function(err, client) {
-      if (err || !client) {
-        log.error({ err }, "Error while connecting to DB");
-      } else {
-        clearInterval(interval);
-        clearTimeout(timeout);
+const db = new PouchDB('schools');
+app(db).listen(PORT, () => log.info(`App listening on port ${PORT}!`));
 
-        const db = client.db(MONGO_INITDB_DATABASE);
+// const connect = () => {
+//   MongoClient.connect(
+//     url,
+//     { useNewUrlParser: true, connectTimeoutMS: 1000 },
+//     function(err, client) {
+//       if (err || !client) {
+//         log.error({ err }, "Error while connecting to DB");
+//       } else {
+//         clearInterval(interval);
+//         clearTimeout(timeout);
 
-        app(db).listen(PORT, () => log.info(`App listening on port ${PORT}!`));
-      }
-    }
-  );
-};
+//         const db = client.db(MONGO_INITDB_DATABASE);
 
-const interval = setInterval(connect, 3000);
+//         app(db).listen(PORT, () => log.info(`App listening on port ${PORT}!`));
+//       }
+//     }
+//   );
+// };
 
-const timeout = setTimeout(() => {
-  clearInterval(interval);
+// const interval = setInterval(connect, 3000);
 
-  log.error("Failed to connect to database!");
+// const timeout = setTimeout(() => {
+//   clearInterval(interval);
 
-  process.exit(1);
-}, 10000);
+//   log.error("Failed to connect to database!");
+
+//   process.exit(1);
+// }, 10000);
+
+

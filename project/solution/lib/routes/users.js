@@ -1,6 +1,7 @@
 const { scrypt } = require("crypto");
 const express = require("express");
 const passport = require("passport");
+const uuidv1 = require('uuid/v1');
 
 const log = require("../logger")();
 
@@ -10,7 +11,7 @@ const doLogin = (req, res) => {
   res.sendStatus(200);
 };
 
-const doRegister = collection => (req, res) => {
+const doRegister = db => (req, res, next) => {
   const { username, password } = req.body;
 
   scrypt(password, SALT, 64, (err, derivedKey) => {
@@ -19,8 +20,8 @@ const doRegister = collection => (req, res) => {
       err.statusCode = 500;
       next(err);
     } else {
-      collection.insertOne(
-        { username, password: derivedKey.toString("hex") },
+      db.put(
+        { username, password: derivedKey.toString("hex"), type: 'user', _id: uuidv1() },
         err => {
           if (err) {
             log.error({ err }, "Failed to save user");
@@ -37,10 +38,9 @@ const doRegister = collection => (req, res) => {
 
 module.exports = db => {
   const router = express.Router();
-  const collection = db.collection("users");
 
   router.post("/login", passport.authenticate("local"), doLogin);
-  router.post("/register", doRegister(collection));
+  router.post("/register", doRegister(db));
 
   return router;
 };
