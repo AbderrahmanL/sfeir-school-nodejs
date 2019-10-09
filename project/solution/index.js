@@ -23,7 +23,7 @@ process.on("unhandledRejection", err => {
   process.exit(1);
 });
 
-const db = new PouchDB('http://localhost:5984/schools');
+const db = new PouchDB(url);
 app(db).listen(PORT, () => log.info(`App listening on port ${PORT}!`));
 
 
