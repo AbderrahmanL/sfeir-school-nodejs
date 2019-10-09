@@ -5,16 +5,13 @@ const app = require("./lib/app");
 const log = require("./lib/logger")();
 
 const {
-  MONGO_INITDB_ROOT_PASSWORD = "example",
-  MONGO_INITDB_ROOT_USERNAME = "root",
-  MONGO_INITDB_DATABASE = "schoolsdb",
-  MONGO_INITDB_DATABASE_USERS = "admin",
+  INITDB_DATABASE = "schoolsdb",
   DATABASE_HOST = "localhost",
-  DATABASE_PORT = 27017,
+  DATABASE_PORT = 5984,
   PORT = 3000
 } = process.env;
 
-const url = `mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${MONGO_INITDB_DATABASE_USERS}`;
+const url = `http://${DATABASE_HOST}:${DATABASE_PORT}/${INITDB_DATABASE}`;
 
 process.on("uncaughtException", err => {
   log.error({ err }, "Got an uncaught exception");
@@ -26,7 +23,7 @@ process.on("unhandledRejection", err => {
   process.exit(1);
 });
 
-const db = new PouchDB('schools');
+const db = new PouchDB('http://localhost:5984/schools');
 app(db).listen(PORT, () => log.info(`App listening on port ${PORT}!`));
 
 

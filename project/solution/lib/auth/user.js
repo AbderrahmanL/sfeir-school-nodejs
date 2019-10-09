@@ -25,16 +25,15 @@ const findUser = db => (username, password, done) => {
               password: derivedKey.toString("hex")
             }
           },
-          (err, user) => {
+          (err, result) => {
             if (err) {
               return done(err);
             }
-
-            if (!user) {
+            if (!result.docs) {
               return done(null, false, { message: "Incorrect username." });
             }
 
-            return done(null, user);
+            return done(null, result.docs[0]);
           }
         )
       );
