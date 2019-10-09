@@ -37,7 +37,7 @@ describe("Sfeir Schools app", () => {
   });
 
   afterAll(async () => {
-    db.destroy();
+    await db.destroy();
   });
 
   it("It should list Sfeir Schools", async done => {
