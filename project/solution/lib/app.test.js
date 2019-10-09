@@ -1,6 +1,7 @@
 const request = require("supertest");
 const PouchDB = require('pouchdb');
 PouchDB.plugin(require('pouchdb-find'));
+PouchDB.plugin(require('pouchdb-adapter-memory'));
 
 let db;
 let session;
@@ -16,7 +17,7 @@ describe("Sfeir Schools app", () => {
   }
 
   beforeAll(async () => {
-    const db = new PouchDB('test');
+    const db = new PouchDB('test', {adapter: 'memory'});
 
     app = appFunction(db);
 
