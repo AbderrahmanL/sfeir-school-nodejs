@@ -25,5 +25,3 @@ process.on("unhandledRejection", err => {
 
 const db = new PouchDB(url);
 app(db).listen(PORT, () => log.info(`App listening on port ${PORT}!`));
-
-
