@@ -11,7 +11,7 @@ const findUser = db => (username, password, done) => {
     if (err) {
       log.error({ err }, "Failed to generate password");
       err.statusCode = 401;
-      next(err);
+      done(err);
     } else {
       db.createIndex({
         index: {
