@@ -1,5 +1,5 @@
 const express = require("express");
-const uuidv1 = require('uuid/v1');
+const uuidv1 = require("uuid/v1");
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
@@ -8,9 +8,8 @@ function ensureAuthenticated(req, res, next) {
 }
 
 const doGet = db => (req, res) => {
-  db.find({ selector: { type: 'school' } })
+  db.find({ selector: { type: "school" } })
     .then(function(results) {
-      console.log({ results }, "Found schools");
       res.send(results.docs);
     })
     .catch(err => {
@@ -21,17 +20,16 @@ const doGet = db => (req, res) => {
 
 const doPost = db => (req, res, next) => {
   const school = req.body;
-  school.type = 'school';
+  school.type = "school";
   school._id = uuidv1();
-  db.put(school, function(err) {
-    if (err) {
+  db.put(school)
+    .then(() => {
+      res.sendStatus(201);
+    })
+    .catch(err => {
       console.log("Failed to insert school", school, err);
       res.sendStatus(500);
-    } else {
-      console.log({ school }, "Save successful");
-      res.sendStatus(201);
-    }
-  });
+    });
 };
 
 module.exports = db => {

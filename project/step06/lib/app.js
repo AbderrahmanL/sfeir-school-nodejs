@@ -24,10 +24,10 @@ module.exports = db => {
     school._id = uuidv1();
 
     db.put(school)
-      .then(function() {
+      .then(() => {
         res.sendStatus(201);
       })
-      .catch(function(err) {
+      .catch(err => {
         console.log("Failed to insert school", school, err);
         res.sendStatus(500);
       });

@@ -3,7 +3,8 @@
 ## Pour essayer tout ça:
 
 - Installer les modules `npm install`.
-- Lancer avec `npm start`.
+- Lancer avec `NODE_ENV=development npm run dev`.
+
 - Tester avec [httpie](https://httpie.org/):
 
 - Créer un user: `http POST http://localhost:3000/users/register username="Jtutu" password="Plop"`.

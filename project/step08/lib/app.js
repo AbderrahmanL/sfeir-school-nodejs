@@ -41,30 +41,28 @@ module.exports = db => {
   passport.use(getUserStrategy(db));
 
   app.get("/", (req, res) => {
-    db.find({ selector: { type: 'school' } })
-    .then(function(results) {
-      console.log({ results }, "Found schools");
-      res.send(results.docs);
-    })
-    .catch(err => {
-      console.log("Failed to find schools", err);
-      res.sendStatus(500);
-    });
+    db.find({ selector: { type: "school" } })
+      .then(function(results) {
+        res.send(results.docs);
+      })
+      .catch(err => {
+        console.log("Failed to find schools", err);
+        res.sendStatus(500);
+      });
   });
 
   app.post("/", ensureAuthenticated, (req, res) => {
     const school = req.body;
-    school.type = 'school';
+    school.type = "school";
     school._id = uuidv1();
-    db.put(school, function(err) {
-      if (err) {
+    db.put(school)
+      .then(() => {
+        res.sendStatus(201);
+      })
+      .catch(err => {
         console.log("Failed to insert school", school, err);
         res.sendStatus(500);
-      } else {
-        console.log({ school }, "Save successful");
-        res.sendStatus(201);
-      }
-    });
+      });
   });
 
   app.post("/login", passport.authenticate("local"), (req, res) => {
@@ -79,17 +77,19 @@ module.exports = db => {
         console.log("Failed to generate password", err);
         res.sendStatus(500);
       } else {
-        db.put(
-          { username, password: derivedKey.toString("hex"), type: 'user', _id: uuidv1() },
-          err => {
-            if (err) {
-              console.log("Failed to save user", err);
-              res.sendStatus(500);
-            } else {
-              res.sendStatus(201);
-            }
-          }
-        );
+        db.put({
+          username,
+          password: derivedKey.toString("hex"),
+          type: "user",
+          _id: uuidv1()
+        })
+          .then(() => {
+            res.sendStatus(201);
+          })
+          .catch(err => {
+            console.log("Failed to save user", err);
+            res.sendStatus(500);
+          });
       }
     });
   });

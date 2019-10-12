@@ -1,7 +1,7 @@
 const { scrypt } = require("crypto");
 const express = require("express");
 const passport = require("passport");
-const uuidv1 = require('uuid/v1');
+const uuidv1 = require("uuid/v1");
 
 const { SALT } = process.env;
 
@@ -17,17 +17,19 @@ const doRegister = db => (req, res) => {
       console.log("Failed to generate password", err);
       res.sendStatus(500);
     } else {
-      db.put(
-        { username, password: derivedKey.toString("hex"), type: 'user', _id: uuidv1() },
-        err => {
-          if (err) {
-            console.log("Failed to save user", err);
-            res.sendStatus(500);
-          } else {
-            res.sendStatus(201);
-          }
-        }
-      );
+      db.put({
+        username,
+        password: derivedKey.toString("hex"),
+        type: "user",
+        _id: uuidv1()
+      })
+        .then(() => {
+          res.sendStatus(201);
+        })
+        .catch(err => {
+          console.log("Failed to save user", err);
+          res.sendStatus(500);
+        });
     }
   });
 };

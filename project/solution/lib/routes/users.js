@@ -1,7 +1,7 @@
 const { scrypt } = require("crypto");
 const express = require("express");
 const passport = require("passport");
-const uuidv1 = require('uuid/v1');
+const uuidv1 = require("uuid/v1");
 
 const log = require("../logger")();
 
@@ -18,21 +18,22 @@ const doRegister = db => (req, res, next) => {
     if (err) {
       log.error({ err }, "Failed to generate password");
       err.statusCode = 500;
-      next(err);
-    } else {
-      db.put(
-        { username, password: derivedKey.toString("hex"), type: 'user', _id: uuidv1() },
-        err => {
-          if (err) {
-            log.error({ err }, "Failed to save user");
-            err.statusCode = 500;
-            next(err);
-          } else {
-            res.sendStatus(201);
-          }
-        }
-      );
+      return next(err);
     }
+    db.put({
+      username,
+      password: derivedKey.toString("hex"),
+      type: "user",
+      _id: uuidv1()
+    })
+      .then(() => {
+        res.sendStatus(201);
+      })
+      .catch(err => {
+        log.error({ err }, "Failed to save user");
+        err.statusCode = 500;
+        next(err);
+      });
   });
 };
 
